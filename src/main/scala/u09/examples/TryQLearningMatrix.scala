@@ -12,11 +12,12 @@ object TryQMatrix extends App :
     height = 5,
     initial = (0,0),
     terminal = {case _=>false},
-    reward = { case ((1,0),_) => 10; case ((3,0),_) => 5; case _ => 0},
+    reward = { case ((1,0),_) => 10; case ((3,0),_) => 5 },
     jumps = { case ((1,0),_) => (1,4); case ((3,0),_) => (3,2) },
-    gamma = 0.9,
-    alpha = 0.5,
-    epsilon = 0.3,
+    obstacles = Seq((0, 1), (2, 0), (3, 1)),
+    gamma = 0.9, // discount rate: how much a reward now is better than in the future
+    alpha = 0.5, // how much consider old value respect to the new one
+    epsilon = 0.3, // sort of noise, to add randomness to the movement
     v0 = 1
   )
 

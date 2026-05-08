@@ -17,6 +17,7 @@ object QMatrix:
                      terminal: PartialFunction[Node, Boolean],
                      reward: PartialFunction[(Node, Move), Double],
                      jumps: PartialFunction[(Node, Move), Node],
+                     obstacles: Seq[Node],
                      gamma: Double,
                      alpha: Double,
                      epsilon: Double = 0.0,
@@ -33,7 +34,12 @@ object QMatrix:
           case ((n1, n2), RIGHT) => ((n1 + 1) min (width - 1), n2)
           case _ => ???
         // computes rewards, and possibly a jump
-        (reward.apply((s, a)), jumps.orElse[(Node, Move), Node](_ => n2)(s, a))
+        (reward.applyOrElse((s, a), _ => if obstacles contains n2 then -1000 else 0),
+          jumps.orElse[(Node, Move), Node]((n1, _) => n1.moveIfNotObstacle(n2))(s, a))
+
+    extension (initialNode: Node)
+      private def moveIfNotObstacle(destNode: Node): Node =
+        if obstacles contains destNode then initialNode else destNode
 
     def qFunction = QFunction(Move.values.toSet, v0, terminal)
     def qSystem = QSystem(environment = qEnvironment(), initial, terminal)
